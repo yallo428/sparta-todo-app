@@ -1,4 +1,4 @@
-package org.example.entity;
+package org.example.spartatodoapp.entity;
 
 
 import jakarta.persistence.*;
@@ -11,10 +11,10 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
-public class User {
+public class Member {
 
-    @Id @GeneratedValue
-    @Column(name = "user_id")
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
     private Long id;
 
     @Column(unique = true)
@@ -22,14 +22,14 @@ public class User {
 
     private String password;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "member")
     List<Todo> todos = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "member")
     List<Comment> comments = new ArrayList<>();
 
 
-    public User(String username, String password) {
+    public Member(String username, String password) {
         this.username = username;
         this.password = password;
     }
