@@ -32,7 +32,6 @@ class TodoRepositoryTest {
     void save(){
         Member member = memberRepository.findById(1L).orElseThrow();
 
-        Todo todo = new Todo("title", "test", false, member);
         todoRepository.save(todo);
     }
 

@@ -17,16 +17,11 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String username;
 
+    @Column(nullable = false)
     private String password;
-
-    @OneToMany(mappedBy = "member")
-    List<Todo> todos = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member")
-    List<Comment> comments = new ArrayList<>();
 
 
     public Member(String username, String password) {
