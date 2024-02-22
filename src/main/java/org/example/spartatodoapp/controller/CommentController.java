@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.spartatodoapp.dto.CommentForm;
 import org.example.spartatodoapp.service.CommentService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 public class CommentController {
-
     private final CommentService commentService;
 
 
@@ -25,7 +25,7 @@ public class CommentController {
     ) {
         String userName = (String) request.getAttribute("userName");
         commentService.write(userName, id, commentForm);
-        return ResponseEntity.ok("OK");
+        return ResponseEntity.status(HttpStatus.CREATED).body("성공");
     }
 
 

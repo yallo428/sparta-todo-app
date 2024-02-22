@@ -9,6 +9,7 @@ import org.example.spartatodoapp.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,7 +19,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody CreateMemberDTO createMemberDTO){
+    public ResponseEntity<String> signup(@RequestBody @Validated CreateMemberDTO createMemberDTO){
         memberService.signup(createMemberDTO);
         return ResponseEntity.ok("OK");
     }

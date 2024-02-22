@@ -1,6 +1,5 @@
 package org.example.spartatodoapp.service;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.spartatodoapp.dto.CreateMemberDTO;
 import org.example.spartatodoapp.entity.Member;
@@ -17,23 +16,25 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public void signup(CreateMemberDTO dto) {
-        String password = passwordEncoder.encode(dto.getPassword());
-        try {
-            memberRepository.save(new Member(dto.getUserName(), password));
-        } catch (Exception e) {
-            e.printStackTrace();
+    public Member signup(CreateMemberDTO dto) {
+        if(memberRepository.findByUsername(dto.getUserName()).isPresent()){
+            throw new IllegalArgumentException("중복 회원입니다.");
         }
+
+        String password = passwordEncoder.encode(dto.getPassword());
+
+        return memberRepository.save(new Member(dto.getUserName(), password));
     }
 
     public String signin(CreateMemberDTO createMemberDTO) {
         Member member = memberRepository.findByUsername(createMemberDTO.getUserName()).orElseThrow(() ->
                 new IllegalArgumentException("해당 유저가 없습니다."));
-        if (passwordEncoder.matches(createMemberDTO.getPassword(), member.getPassword())) {
-            return jwtUtil.createToken(member.getUsername());
-        }
-        throw new IllegalArgumentException("테스트");
+
+        member.passwordCheck(passwordEncoder, createMemberDTO.getPassword());
+
+        return jwtUtil.createToken(member.getUsername());
     }
 
-
 }
+
+

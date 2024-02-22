@@ -9,6 +9,7 @@ import org.example.spartatodoapp.entity.Member;
 import org.example.spartatodoapp.entity.Todo;
 import org.example.spartatodoapp.repository.MemberRepository;
 import org.example.spartatodoapp.repository.TodoRepository;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class TodoService {
+public class  TodoService {
 
     private final MemberRepository memberRepository;
     private final TodoRepository todoRepository;
@@ -31,6 +32,7 @@ public class TodoService {
         Todo todo = todoRepository.save(new Todo(dto.getTitle(), dto.getContent(), member));
         return new TodoForm(todo.getTitle(), todo.getContent());
     }
+
 
     public SelectedTodoDTO getChoiceTodo(Long id) {
         Todo todo = todoRepository.findById(id).orElseThrow(
@@ -52,7 +54,13 @@ public class TodoService {
     }
 
     public List<TodoListDTO> getTodoList() {
-        return todoRepository.findAll().stream().map(
+        List<Todo> findAll = todoRepository.findAll();
+
+        if(findAll.isEmpty()){
+            throw new IllegalArgumentException("게시글이 없습니다.");
+        }
+
+        return findAll.stream().map(
                 todo -> new TodoListDTO(
                         todo.getMember().getUsername(),
                         todo.getTitle(),
@@ -74,13 +82,12 @@ public class TodoService {
         todo.complete();
     }
 
-
     private Todo validateMember(String userName, Long id) {
         Todo todo = todoRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("해당 게시글을 찾지 못했습니다.")
+                () -> new RuntimeException("에러")
         );
 
-        if (!todo.getMember().getUsername().equals(userName)) {
+        if (todo.isNotUserName(userName)) {
             throw new IllegalArgumentException("해당 게시물은 수정할 수 없습니다.");
         }
         return todo;

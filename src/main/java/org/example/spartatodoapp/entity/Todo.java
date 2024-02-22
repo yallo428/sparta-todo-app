@@ -57,7 +57,13 @@ public class Todo extends Timestamped {
         this.comments.remove(comment);
     }
 
+
+
     public void complete() {
         this.complete = true;
+    }
+
+    public boolean isNotUserName(String username){
+        return !member.isNotUserName(username);
     }
 }

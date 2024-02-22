@@ -4,6 +4,7 @@ package org.example.spartatodoapp.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,5 +30,14 @@ public class Member {
         this.password = password;
     }
 
+    public boolean isNotUserName(String username){
+        return !this.username.equals(username);
+    }
+
+    public void passwordCheck(PasswordEncoder passwordEncoder, String password){
+        if(!passwordEncoder.matches(password, this.password)){
+            throw new IllegalArgumentException("패스워드가 다릅니다.");
+        }
+    }
 
 }
