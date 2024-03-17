@@ -4,59 +4,60 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.spartatodoapp.dto.TodoForm;
 import org.example.spartatodoapp.dto.SelectedTodoDTO;
-import org.example.spartatodoapp.dto.TodoListDTO;
+import org.example.spartatodoapp.dto.TodoDetailDTO;
 import org.example.spartatodoapp.service.TodoService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/todos")
+@RequestMapping("/api/v1/todos")
 public class TodoController {
 
     private final TodoService todoService;
 
     @GetMapping("")
-    public ResponseEntity<List<TodoListDTO>> todoList(){
-        List<TodoListDTO> todoList = todoService.getTodoList();
+    public ResponseEntity<List<TodoDetailDTO>> todoList(){
+        List<TodoDetailDTO> todoList = todoService.getTodoList();
         return ResponseEntity.ok(todoList);
     }
-    @GetMapping("/selected/{id}")
-    public ResponseEntity<SelectedTodoDTO> selected(@PathVariable Long id){
 
+    @GetMapping("/{id}")
+    public ResponseEntity<SelectedTodoDTO> selected(@PathVariable Long id){
         SelectedTodoDTO choiceTodo = todoService.getChoiceTodo(id);
         return ResponseEntity.ok(choiceTodo);
 
     }
-    @PostMapping("/write")
+
+    @PostMapping("")
     public ResponseEntity<TodoForm> write(
-            HttpServletRequest req,
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody TodoForm dto){
 
-        String userName = (String) req.getAttribute("userName");
-        TodoForm todoDTo = todoService.save(dto, userName);
+        TodoForm todoDTo = todoService.save(dto, userDetails.getUsername());
         return ResponseEntity.ok(todoDTo);
     }
 
-    @PutMapping("/selected/{id}/update")
+    @PutMapping("/{id}")
     public ResponseEntity<TodoForm> update(
-            HttpServletRequest req,
+            @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long id,
             @RequestBody TodoForm dto) {
-        String userName = (String) req.getAttribute("userName");
-        TodoForm todoDTo = todoService.update(id, dto, userName);
+        TodoForm todoDTo = todoService.update(id, dto, userDetails.getUsername());
         return ResponseEntity.ok(todoDTo);
     }
 
 
-    @PutMapping("/selected/{id}/complete")
+    @PutMapping("/{id}/complete")
     public ResponseEntity<String> complete(
-            HttpServletRequest req,
+            @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long id) {
-        String userName = (String) req.getAttribute("userName");
-        todoService.complete(id, userName);
+
+        todoService.complete(id, userDetails.getUsername());
         return ResponseEntity.ok("완료되었습니다.");
     }
 

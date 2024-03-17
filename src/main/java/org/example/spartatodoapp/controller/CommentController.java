@@ -1,55 +1,51 @@
 package org.example.spartatodoapp.controller;
 
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.spartatodoapp.dto.CommentForm;
 import org.example.spartatodoapp.service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/api/v1/todos/{todoId}/comments/")
 public class CommentController {
     private final CommentService commentService;
-
-
-    @PostMapping("/todos/{todo-id}/comments/write")
+    @PostMapping("")
     public ResponseEntity<String> write(
-            @PathVariable("todo-id") Long id,
-            HttpServletRequest request,
-            @RequestBody CommentForm commentForm
-    ) {
-        String userName = (String) request.getAttribute("userName");
-        commentService.write(userName, id, commentForm);
+            @PathVariable("todoId") Long id,
+            @RequestBody CommentForm commentForm,
+            @AuthenticationPrincipal UserDetails userDetails
+            ) {
+        commentService.create(userDetails.getUsername(), id, commentForm);
         return ResponseEntity.status(HttpStatus.CREATED).body("성공");
     }
 
 
-    @PutMapping("/todos/{todo-id}/comments/{comment-id}/update")
+    @PutMapping("/{commentId}/update")
     public ResponseEntity<String> update(
-            @PathVariable("todo-id") Long id,
-            @PathVariable("comment-id") Long commentId,
-            HttpServletRequest request,
+            @PathVariable("todoId") Long id, @PathVariable("commentId") Long commentId,
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody CommentForm commentForm) {
 
-        String userName = (String) request.getAttribute("userName");
-        commentService.update(userName, id, commentId, commentForm);
+        commentService.update(userDetails.getUsername(), id, commentId, commentForm);
 
         return ResponseEntity.ok("OK");
     }
 
-    @DeleteMapping("/todos/{todo-id}/comments/{comment-id}/delete")
+    @DeleteMapping("/{commentId}/delete")
     public ResponseEntity<String> delete(
-            HttpServletRequest req,
-            @PathVariable("todo-id") Long id,
-            @PathVariable("comment-id") Long commentId) {
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable("todoId") Long id,
+            @PathVariable("commentId") Long commentId) {
 
-        String userName = (String) req.getAttribute("userName");
-        commentService.delete(userName, id, commentId);
+        commentService.delete(userDetails.getUsername(), id, commentId);
 
         return ResponseEntity.ok("OK");
     }

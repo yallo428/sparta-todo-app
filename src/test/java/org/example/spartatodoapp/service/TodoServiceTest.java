@@ -1,16 +1,15 @@
 package org.example.spartatodoapp.service;
 
 import org.assertj.core.api.Assertions;
-import org.example.spartatodoapp.dto.CommentListDTO;
+import org.example.spartatodoapp.dto.CommentDetailDTO;
 import org.example.spartatodoapp.dto.SelectedTodoDTO;
 import org.example.spartatodoapp.dto.TodoForm;
-import org.example.spartatodoapp.dto.TodoListDTO;
+import org.example.spartatodoapp.dto.TodoDetailDTO;
 import org.example.spartatodoapp.entity.Comment;
 import org.example.spartatodoapp.entity.Member;
 import org.example.spartatodoapp.entity.Todo;
 import org.example.spartatodoapp.repository.MemberRepository;
 import org.example.spartatodoapp.repository.TodoRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -59,7 +58,7 @@ class TodoServiceTest {
 
         todo.addComment(comment);
 
-        List<CommentListDTO> commentList = todo.getComments().stream().map(sample -> new CommentListDTO(
+        List<CommentDetailDTO> commentList = todo.getComments().stream().map(sample -> new CommentDetailDTO(
                 sample.getMember().getUsername(),
                 sample.getContent(),
                 sample.getCreateAt()
@@ -88,8 +87,8 @@ class TodoServiceTest {
         todos.add(new Todo("테스트", "테스트", member));
         todos.add(new Todo("테스트", "테스트", member));
 
-        List<TodoListDTO> todoListDTOS = todos.stream().map(
-                todo -> new TodoListDTO(
+        List<TodoDetailDTO> todoDetailDTOS = todos.stream().map(
+                todo -> new TodoDetailDTO(
                         todo.getMember().getUsername(),
                         todo.getTitle(),
                         todo.getCreateAt(),
@@ -97,9 +96,9 @@ class TodoServiceTest {
 
         given(todoRepository.findAll()).willReturn(todos);
 
-        List<TodoListDTO> result = todoService.getTodoList();
+        List<TodoDetailDTO> result = todoService.getTodoList();
 
-        Assertions.assertThat(todoListDTOS).isEqualTo(result);
+        Assertions.assertThat(todoDetailDTOS).isEqualTo(result);
     }
 
     @Test

@@ -1,9 +1,9 @@
 package org.example.spartatodoapp.service;
 
 import org.assertj.core.api.Assertions;
-import org.example.spartatodoapp.dto.CreateMemberDTO;
+import org.example.spartatodoapp.dto.MemberFormDTO;
 import org.example.spartatodoapp.entity.Member;
-import org.example.spartatodoapp.jwt.JwtUtil;
+import org.example.spartatodoapp.util.JwtUtil;
 import org.example.spartatodoapp.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -40,7 +39,7 @@ class MemberServiceTest {
 
     @Test
     void 회원_저장() {
-        CreateMemberDTO dto = new CreateMemberDTO();
+        MemberFormDTO dto = new MemberFormDTO();
         dto.setUserName("test");
         dto.setPassword("1234");
         Member member = new Member("test", "1234");
@@ -55,7 +54,7 @@ class MemberServiceTest {
 
     @Test
     void 중복_회원(){
-        CreateMemberDTO dto = new CreateMemberDTO();
+        MemberFormDTO dto = new MemberFormDTO();
         dto.setUserName("test");
         dto.setPassword("1234");
         Member member = new Member("test", "1234");
@@ -70,7 +69,7 @@ class MemberServiceTest {
 
     @Test
     void 로그인(){
-        CreateMemberDTO dto = new CreateMemberDTO();
+        MemberFormDTO dto = new MemberFormDTO();
         dto.setUserName("test");
         dto.setPassword("1234");
         String password = passwordEncoder.encode(dto.getPassword());
@@ -87,7 +86,7 @@ class MemberServiceTest {
 
     @Test
     void 패스워드_불일치(){
-        CreateMemberDTO dto = new CreateMemberDTO();
+        MemberFormDTO dto = new MemberFormDTO();
         dto.setUserName("test");
         dto.setPassword("1234");
         String password = passwordEncoder.encode(dto.getPassword());

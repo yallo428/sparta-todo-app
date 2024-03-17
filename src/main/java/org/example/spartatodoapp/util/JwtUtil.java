@@ -1,8 +1,10 @@
-package org.example.spartatodoapp.jwt;
+package org.example.spartatodoapp.util;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +15,7 @@ import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
+@Component
 public class JwtUtil {
     // Header KEY 값
     public static final String AUTHORIZATION_HEADER = "Authorization";
@@ -38,8 +41,7 @@ public class JwtUtil {
     public String createToken(String username) {
         Date date = new Date();
         return BEARER_PREFIX +
-                Jwts
-                        .builder()
+                Jwts.builder()
                         .setSubject(username) // 식별자 ID
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                         .setIssuedAt(date)
@@ -79,6 +81,7 @@ public class JwtUtil {
         } catch (IllegalArgumentException e) {
             logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
         }
+
         return false;
     }
 
@@ -86,5 +89,9 @@ public class JwtUtil {
     // 토큰에서 사용자 정보 가져오기
     private String getUserInfoFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public void addJwtToHeader(String token, HttpServletResponse response){
+        response.addHeader(AUTHORIZATION_HEADER, token);
     }
 }
