@@ -6,6 +6,8 @@ import org.example.spartatodoapp.dto.TodoForm;
 import org.example.spartatodoapp.dto.SelectedTodoDTO;
 import org.example.spartatodoapp.dto.TodoDetailDTO;
 import org.example.spartatodoapp.service.TodoService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,9 +23,8 @@ public class TodoController {
     private final TodoService todoService;
 
     @GetMapping("")
-    public ResponseEntity<List<TodoDetailDTO>> todoList(){
-        List<TodoDetailDTO> todoList = todoService.getTodoList();
-        return ResponseEntity.ok(todoList);
+    public Page<TodoDetailDTO> todoList(Pageable pageable){
+        return todoService.getTodoList(pageable);
     }
 
     @GetMapping("/{id}")

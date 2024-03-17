@@ -9,6 +9,8 @@ import org.example.spartatodoapp.exception.custom.NotAuthorityException;
 import org.example.spartatodoapp.repository.MemberRepository;
 import org.example.spartatodoapp.repository.TodoRepository;
 import org.example.spartatodoapp.repository.TodoRepositorySupport;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,8 +42,8 @@ public class  TodoService {
     }
 
 
-    public List<TodoDetailDTO> getTodoList() {
-        List<TodoDetailDTO> findAll = todoRepositorySupport.findAll();
+    public Page<TodoDetailDTO> getTodoList(Pageable pageable) {
+        Page<TodoDetailDTO> findAll = todoRepositorySupport.findAll(pageable);
 
         if(findAll.isEmpty()){
             throw new EntityNotFoundException("게시글이 없습니다.");
@@ -50,6 +52,17 @@ public class  TodoService {
         return findAll;
 
     }
+
+//    public List<TodoDetailDTO> getTodoList() {
+//        List<Todo> findAll = todoRepository.findAll();
+//
+//        if(findAll.isEmpty()){
+//            throw new EntityNotFoundException("게시글이 없습니다.");
+//        }
+//
+//        return findAll.stream().map(Todo::createTodoDetailDTO).toList();
+//
+//    }
 
     @Transactional
     public TodoForm update(Long id, TodoForm dto, String userName) {

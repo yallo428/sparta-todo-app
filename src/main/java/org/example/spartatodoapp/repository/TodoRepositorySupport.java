@@ -5,6 +5,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.example.spartatodoapp.dto.TodoDetailDTO;
 import org.example.spartatodoapp.entity.QTodo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.support.PageableUtils;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.expression.spel.ast.Projection;
 import org.springframework.stereotype.Repository;
 
@@ -18,8 +23,8 @@ public class TodoRepositorySupport {
 
     private final JPAQueryFactory factory;
 
-    public List<TodoDetailDTO> findAll(){
-        return factory.query()
+    public Page<TodoDetailDTO> findAll(Pageable pageable){
+        List<TodoDetailDTO> todos = factory.query()
                 .select(
                         Projections.fields(
                                 TodoDetailDTO.class,
@@ -31,6 +36,15 @@ public class TodoRepositorySupport {
                         )
                 )
                 .from(todo)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        Long count = factory.query()
+                .select(todo.count())
+                .from(todo)
+                .fetchOne();
+
+        return new PageImpl<>(todos, pageable, count);
     }
 }
